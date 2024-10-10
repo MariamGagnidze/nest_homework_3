@@ -6,6 +6,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { faker } from '@faker-js/faker';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryParamsDto } from './dto/queryparams.dto';
+import { Expense } from 'src/expenses/schema/expense.schema';
 
 @Injectable()
 export class UsersService implements OnModuleInit {
@@ -25,7 +26,7 @@ export class UsersService implements OnModuleInit {
     if (userCount === 0) {
       const users = new Set<string>();
 
-      while (users.size < 30000) {
+      while (users.size < 10) {
         const user = {
           name: faker.person.firstName(),
           email: faker.internet.email(),
@@ -39,11 +40,10 @@ export class UsersService implements OnModuleInit {
         }
       }
 
-      const usersArray = Array.from(users).map((user: string) =>
-        JSON.parse(user),
-      );
+      const usersArray = [...users].map((user) => JSON.parse(user));
+
       await this.userModel.insertMany(usersArray);
-      console.log('Added 30,000 users');
+      console.log('Added 10 users');
     } else {
       console.log('Users already exist, seeding skipped');
     }
@@ -66,19 +66,12 @@ export class UsersService implements OnModuleInit {
   }
 
   async countAll() {
-    return this.userModel.countDocuments();
+    const totalUsers = await this.userModel.countDocuments();
+    return { totalUsers };
   }
 
-  async findByAge(
-    age: number,
-    ageFrom: number,
-    ageTo: number,
-    page = 1,
-    limit = 10,
-  ) {
-    const skip = (page - 1) * limit;
-    const filter = age ? { age } : { age: { $gte: ageFrom, $lte: ageTo } };
-    return this.userModel.find(filter).skip(skip).limit(limit);
+  async findByAge(age: number) {
+    return this.userModel.find({ age });
   }
 
   async findOne(id: string) {
@@ -87,6 +80,10 @@ export class UsersService implements OnModuleInit {
       throw new NotFoundException(`User not found`);
     }
     return user;
+  }
+
+  async findByEmail(email: string) {
+    return this.userModel.findOne({ email });
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
@@ -107,6 +104,8 @@ export class UsersService implements OnModuleInit {
     if (!user) {
       throw new NotFoundException(`User not found`);
     }
-    return this.userModel.findByIdAndDelete(id);
+    await this.userModel.findByIdAndDelete(id);
+
+    return { success: true, message: 'User deleted' };
   }
 }

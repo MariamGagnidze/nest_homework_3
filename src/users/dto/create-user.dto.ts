@@ -14,4 +14,7 @@ export class CreateUserDto {
   @Min(3)
   @Max(80)
   age: number;
+
+  password: string
+
 }

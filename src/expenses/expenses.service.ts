@@ -70,4 +70,8 @@ export class ExpensesService {
     }
     return this.expenseModel.findByIdAndDelete(id);
   }
+
+  async deleteAllExpenses(userId: string): Promise<void> {
+    await this.expenseModel.deleteMany({ userId });
+  }
 }

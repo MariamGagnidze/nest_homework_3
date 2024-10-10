@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -16,11 +17,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
   @Get()
   findAll(@Query() queryParams: { page: number; take: number }) {
     return this.usersService.findAll(queryParams);
@@ -28,19 +24,20 @@ export class UsersController {
 
   @Get('count')
   async countUsers() {
-    const count = await this.usersService.countAll();
-    return { totalUsers: count };
+    return this.usersService.countAll();
   }
 
   @Get('age')
   async findByAge(
     @Query('age') age: number,
-    @Query('ageFrom') ageFrom: number,
-    @Query('ageTo') ageTo: number,
-    @Query('page') page: number,
-    @Query('limit') limit: number,
   ) {
-    return this.usersService.findByAge(age, ageFrom, ageTo, page, limit);
+    if (!age) {
+      throw new BadRequestException('Age is required');
+    }
+    if (isNaN(age) || age < 0) {
+      throw new BadRequestException('Age must be a positive number');
+    }
+    return this.usersService.findByAge(age);
   }
 
   @Get(':id')
