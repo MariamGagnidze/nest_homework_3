@@ -22,7 +22,7 @@ export class AuthGuard implements CanActivate {
     }
   }
 
-  private getToken(headers: any): string | null {
+   getToken(headers: any): string | null {
     const authorization = headers['authorization'];
     if (!authorization) return null;
     const [type, token] = authorization.split(' ');

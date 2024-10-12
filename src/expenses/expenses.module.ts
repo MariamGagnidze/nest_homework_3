@@ -1,19 +1,19 @@
 import { ExpenseSchema } from './schema/expense.schema';
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ExpensesService } from './expenses.service';
 import { Expense } from './schema/expense.schema';
-import { UsersModule } from '../users/users.module'; 
+import { UsersModule } from '../users/users.module';
 import { ExpensesController } from './expenses.controller';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Expense.name, schema: ExpenseSchema }]),
-    UsersModule,
+    forwardRef(() => UsersModule),
   ],
   providers: [ExpensesService],
   controllers: [ExpensesController],
 
-  exports: [ExpensesService],
+  exports: [ExpensesService, MongooseModule],
 })
 export class ExpensesModule {}

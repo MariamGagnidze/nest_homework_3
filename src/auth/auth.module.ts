@@ -9,9 +9,9 @@ import { AuthGuard } from './auth.guard';
   imports: [
     UsersModule,
     JwtModule.register({
-      secret: "SecretKeyy",
-       signOptions: { expiresIn: '1h' },
-    })
+      secret: 'SecretKeyy',
+      signOptions: { expiresIn: '1h' },
+    }),
   ],
   providers: [AuthService, AuthGuard],
   controllers: [AuthController],

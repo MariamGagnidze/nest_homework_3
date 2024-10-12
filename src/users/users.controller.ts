@@ -28,9 +28,7 @@ export class UsersController {
   }
 
   @Get('age')
-  async findByAge(
-    @Query('age') age: number,
-  ) {
+  async findByAge(@Query('age') age: number) {
     if (!age) {
       throw new BadRequestException('Age is required');
     }

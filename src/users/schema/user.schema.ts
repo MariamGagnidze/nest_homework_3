@@ -13,12 +13,10 @@ export class User extends Document {
   age: number;
 
   @Prop({ required: true })
-  password: string; 
+  password: string;
 
   @Prop({ type: [{ name: String, amount: Number }], default: [] })
   expenses: { name: string; amount: number }[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-
-UserSchema.index({ age: 1 });

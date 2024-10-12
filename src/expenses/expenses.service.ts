@@ -1,9 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { UpdateExpenseDto } from './dto/update-expense.dto';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { Expense } from './schema/expense.schema';
 
 @Injectable()
@@ -11,13 +16,13 @@ export class ExpensesService {
   constructor(
     @InjectModel(Expense.name)
     private expenseModel: Model<Expense>,
-    private usersService: UsersService,
+    @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
   ) {}
 
   async create(userId: string, createExpenseDto: CreateExpenseDto) {
-    const expense = new this.expenseModel({
+    const expense =  await this.expenseModel.create({
       ...createExpenseDto,
-      userId: userId,
+       userId,
     });
     await expense.save();
 
@@ -49,7 +54,7 @@ export class ExpensesService {
       }
       return expense;
     } catch (error) {
-      throw new Error(`Failed to retrieve expense by ID: ${error.message}`);
+      throw new NotFoundException(`Failed to retrieve expense by ID: ${error.message}`);
     }
   }
 
@@ -64,11 +69,11 @@ export class ExpensesService {
   }
 
   async remove(id: string) {
-    const expense = await this.expenseModel.findById(id);
+    const expense = await this.expenseModel.findByIdAndDelete(id);
     if (!expense) {
-      throw new NotFoundException(`Expense not found`);
+      throw new NotFoundException(`Expense with ID ${id} not found`);
     }
-    return this.expenseModel.findByIdAndDelete(id);
+    return expense;
   }
 
   async deleteAllExpenses(userId: string): Promise<void> {
