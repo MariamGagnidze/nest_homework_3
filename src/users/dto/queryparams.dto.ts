@@ -9,4 +9,6 @@ export class QueryParamsDto {
   @Transform(({ value }) => Number(value))
   @IsNumber()
   take: number = 30;  
+
+  age?: number;
 }

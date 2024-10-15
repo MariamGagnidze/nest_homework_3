@@ -12,7 +12,7 @@ export class User extends Document {
   @Prop({ required: true })
   age: number;
 
-  @Prop({ required: true })
+  @Prop({ required: true, select: false })
   password: string;
 
   @Prop({ type: [{ name: String, amount: Number }], default: [] })

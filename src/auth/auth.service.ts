@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { SignInDto } from './dto/sign-in.dto';  
 import { JwtService } from '@nestjs/jwt';
 import { QueryParamsDto } from 'src/users/dto/queryparams.dto';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -55,14 +56,14 @@ export class AuthService {
     return this.usersService.findOne(userId);
   }
 
-  async deleteUser(id: string) {
-    const user = await this.usersService.findOne(id);
-    if (!user) {
-      throw new BadRequestException('User not found');
-    }
 
-    await this.usersService.remove(id);
 
-    return { success: true, message: 'User deleted ' };
-  }
+  async updateUser(id: string, updateUserDto: UpdateUserDto) {
+    return this.usersService.update(id, updateUserDto);
+}
+
+async removeUser(id: string) {
+  return this.usersService.remove(id);
+}
+
 }

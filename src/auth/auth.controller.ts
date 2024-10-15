@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Post, Delete, Param, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Delete, Param, Query, UseGuards, Patch } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto'; 
 import { SignInDto } from './dto/sign-in.dto'; 
 import { AuthGuard } from './auth.guard';
 import { User } from 'src/users/users.decorator';
 import { take } from 'rxjs';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -35,10 +36,16 @@ export class AuthController {
     return this.authService.getCurrentUser(userId);
   }
 
-  @Delete('users/:id')
-  @UseGuards(AuthGuard)
-  deleteUser(@Param('id') id: string) {
-    return this.authService.deleteUser(id);
-  }
   
+  @Patch('users/:id')
+@UseGuards(AuthGuard)
+updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.authService.updateUser(id, updateUserDto);
+}
+
+@Delete('users/:id')
+@UseGuards(AuthGuard)
+removeUser(@Param('id') id: string) {
+    return this.authService.removeUser(id);
+}
 }

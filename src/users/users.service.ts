@@ -64,9 +64,11 @@ export class UsersService implements OnModuleInit {
   }
 
   async findAll(queryParams: QueryParamsDto) {
-    let { page, take } = queryParams;
+    let { page, take, age } = queryParams;
 
     take = take > 100 ? 100 : take;
+
+    const query = age ? { age } : {};
 
     return this.userModel
       .find()
@@ -102,11 +104,6 @@ export class UsersService implements OnModuleInit {
       throw new NotFoundException(`User not found`);
     }
     return this.userModel.findByIdAndUpdate(id, updateUserDto, { new: true });
-  }
-
-  async deleteAllUsers() {
-    await this.userModel.deleteMany({});
-    return { message: 'All users have been deleted' };
   }
 
   async remove(id: string) {
