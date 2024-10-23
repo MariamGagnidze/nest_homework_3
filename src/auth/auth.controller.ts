@@ -6,17 +6,26 @@ import { AuthGuard } from './auth.guard';
 import { User } from 'src/users/users.decorator';
 import { take } from 'rxjs';
 import { UpdateUserDto } from 'src/users/dto/update-user.dto';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiOkResponse, ApiBadRequestResponse } from '@nestjs/swagger';
 
+@ApiTags('Authentication')
+@ApiBearerAuth()
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('sign-up')
+  @ApiOperation({ summary: 'User sign-up' })
+  @ApiOkResponse({ description: 'User registered successfully.' })
+  @ApiBadRequestResponse({ description: 'User already exists.' })
   signUp(@Body() createUserDto: CreateUserDto) {
     return this.authService.signUp(createUserDto);
   }
 
   @Post('sign-in')
+  @ApiOperation({ summary: 'User sign-in' })
+  @ApiOkResponse({ description: 'User signed in successfully.' })
+  @ApiBadRequestResponse({ description: 'Invalid credentials.' })
   signIn(@Body() signInDto: SignInDto) {
     return this.authService.signIn(signInDto);
   }
@@ -32,6 +41,8 @@ export class AuthController {
 
   @Get('current-user')
   @UseGuards(AuthGuard)
+  @ApiOperation({ summary: 'Get current authenticated user' })
+  @ApiOkResponse({ description: 'Current user returned successfully.' })
   getCurrentUser(@User() userId: string) {
     return this.authService.getCurrentUser(userId);
   }
